@@ -3,12 +3,10 @@ import {render} from 'react-dom';
 import { DrizzleContext } from '@drizzle/react-plugin';
 import { Drizzle } from "@drizzle/store";
 import drizzleOptions from "./utils/drizzleOptions"
-import {Web3}from "web3";
 import App from "./App"
 
-
-
 const drizzle = new Drizzle(drizzleOptions)
+
 const rootReactElement = (
   <DrizzleContext.Provider drizzle={drizzle}>
     <DrizzleContext.Consumer>
