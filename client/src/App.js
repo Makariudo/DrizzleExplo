@@ -1,10 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { newContextComponents } from "@drizzle/react-components";
 import './App.css';
 
 const {AccountData, ContractData, ContractForm} = newContextComponents
 
 function App({drizzle, drizzleState}) {
+
+  const subscribeData = useCallback(async () => {
+     const dataKey = await drizzle.contracts.Store.methods.myString.cacheCall();
+     console.log(dataKey);
+     console.log(drizzleState.drizzleStatus.initialized)
+     if(drizzleState.drizzleStatus.initialized){
+       const data = await drizzleState.contracts.Store.myString[dataKey].value;
+       console.log(data)
+       return data
+     }
+    },[drizzleState])
+
+  useEffect(() => {
+  subscribeData();
+}, [subscribeData]);
 
   return (
     <div className="App-header">
