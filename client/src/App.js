@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useEffect, useCallback } from 'react';
 import { newContextComponents } from "@drizzle/react-components";
 import './App.css';
 
@@ -11,11 +11,11 @@ function App({drizzle, drizzleState}) {
      console.log(dataKey);
      console.log(drizzleState.drizzleStatus.initialized)
      if(drizzleState.drizzleStatus.initialized){
-       const data = await drizzleState.contracts.Store.myString[dataKey].value;
+       const data = await drizzleState.contracts?.Store?.myString[dataKey]?.value ?? "pas de data" ;
        console.log(data)
        return data
      }
-    },[drizzleState])
+    },[drizzleState, drizzle.contracts.Store.methods.myString])
 
   useEffect(() => {
   subscribeData();
