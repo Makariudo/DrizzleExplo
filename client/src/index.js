@@ -1,26 +1,37 @@
 import React from "react";
 import {render} from 'react-dom';
-import { DrizzleContext } from '@drizzle/react-plugin';
+import { generateStore } from '@drizzle/store'
+import { Provider } from "react-redux";
 import { Drizzle } from "@drizzle/store";
-import drizzleOptions from "./utils/drizzleOptions"
-import App from "./App"
+import { drizzleReactHooks } from '@drizzle/react-plugin';
+import contractEventNotifier from "./middleware";
+import drizzleOptions from "./utils/drizzleOptions";
+import AppContainer from "./AppContainer";
+import reduxStore from "./reduxStore";
+import LoadingContainer from "./LoadingContainer";
 
-const drizzle = new Drizzle(drizzleOptions)
+const appMiddlewares = [ contractEventNotifier ]
+
+const store = generateStore({
+  drizzleOptions,
+  appMiddlewares,
+  disableReduxDevTools: false  // enable ReduxDevTools!
+})
+const drizzle = new Drizzle(drizzleOptions,store);
+const { DrizzleProvider, Initializer } = drizzleReactHooks;
 
 const rootReactElement = (
-  <DrizzleContext.Provider drizzle={drizzle}>
-    <DrizzleContext.Consumer>
-    {drizzleContext => {
-        const {drizzle, drizzleState, initialized} = drizzleContext;
-        if(!initialized) {
-          return "is Loading..."
-        }
-        return (
-            <App drizzle={drizzle} drizzleState={drizzleState} />
-          )
-        }}
-    </DrizzleContext.Consumer>
-  </DrizzleContext.Provider>
+  <Provider store={reduxStore}>
+    <DrizzleProvider drizzle={drizzle}>
+      <Initializer
+      error="There was an error."
+      loadingContractsAndAccounts="loading contracts & accounts..."
+      loadingWeb3="loading web3..."
+    >
+        <AppContainer />
+      </Initializer>
+    </DrizzleProvider>
+  </Provider>
 );
 
 const target = document.getElementById("root");
