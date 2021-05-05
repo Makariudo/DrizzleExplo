@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { newContextComponents } from "@drizzle/react-components";
 import { drizzleReactHooks } from '@drizzle/react-plugin'
 
@@ -6,22 +6,45 @@ import './App.css';
 
 const {AccountData, ContractData, ContractForm} = newContextComponents
 function App({drizzleState, reduxProps, drizzle}) {
-  
-  
- /*  const subscribeData = useCallback(async () => {
-     const dataKey = await drizzle.contracts.Store.methods.myString.cacheCall();
-     console.log(dataKey);
-     console.log(drizzleState.drizzleStatus.initialized)
-     if(drizzleState.drizzleStatus.initialized){
-       const data = await drizzleState.contracts?.Store?.myString[dataKey]?.value ?? "pas de data" ;
-       console.log(data)
-       return data
-     }
+//redux stuff ??
+  const [string, setString] = useState("loading...");
+  const [input, setInput] = useState("");
+  const [txHashId, setTxHashId] = useState("");
+//
+  const subscribeData = useCallback(async () => {
+       //recup de la clé d'abonnement
+      const dataKey = await drizzle.contracts.Store.methods.myString.cacheCall();
+       //recup de la value
+      const data = await drizzleState.contracts?.Store?.myString[dataKey]?.value ?? "pas de data" ;
+      setString(data)
     },[drizzleState, drizzle.contracts.Store.methods.myString])
 
   useEffect(() => {
   subscribeData();
-}, [subscribeData]); */
+}, [subscribeData]); 
+
+const handleChange = e => setInput(e.target.value);
+const handleSubmit = e => {
+  if(e.keyCode === 13) {
+    handleSend();
+  }
+}
+const handleSend = async() => {
+  console.log("passe par le handleSend")
+  const contract = drizzle.contracts.Store;
+  const ref = await contract.methods["SetData"].cacheSend(input, {
+    from: drizzleState.accounts[0]
+  })
+  setTxHashId(ref);
+  console.log("ref", ref)
+}
+
+const getTxStatus = () => {
+  const {transactions, transactionStack} = drizzleState;
+  const txHash = transactionStack[txHashId];
+  if(!txHash) return null;
+  return `Transaction status: ${transactions[txHash] && transactions[txHash].status}`;
+}
 
   return (
     <div className="App-header">
@@ -34,7 +57,10 @@ function App({drizzleState, reduxProps, drizzle}) {
         <h3> Compte actif :</h3>
         <h4>{drizzleState.accounts[0]}</h4>
         <h4>{reduxProps.name}</h4>
-       <AccountData
+        <h4>Data de la blockchain : {string}</h4>
+        <input type="text" value={input} onChange={handleChange} onKeyDown={handleSubmit} />
+        {getTxStatus()}
+       {/* <AccountData
           drizzle={drizzle}
           drizzleState={drizzleState}
           accountIndex={0}
@@ -47,7 +73,7 @@ function App({drizzleState, reduxProps, drizzle}) {
             contract="Store"
             method="myString"
           />
-        <ContractForm drizzle={drizzle} contract="Store" method="SetData" /> 
+        <ContractForm drizzle={drizzle} contract="Store" method="SetData" />  */}
 
         </div>
       </main>
