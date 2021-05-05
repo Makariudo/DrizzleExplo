@@ -20,8 +20,8 @@ contract("Store", (accounts) => {
      assert.equal(res,"coucou", "didn't update the value")
    })
    it("should emit a new event", async () => {
-    let setData = await storeContract.SetData("coucou",{from: accounts[0]});
-    expectEvent(setData, "setData", {data : "coucou"})
+    let setData = await storeContract.SetData("coucou2",{from: accounts[0]});
+    expectEvent(setData, "setData", {oldValue:"coucou", data : "coucou2"})
    })
 
 

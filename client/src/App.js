@@ -1,6 +1,6 @@
 import { useEffect, useCallback, useState } from 'react';
 import { newContextComponents } from "@drizzle/react-components";
-import { drizzleReactHooks } from '@drizzle/react-plugin'
+import { ToastContainer, Slide } from 'react-toastify';
 
 import './App.css';
 
@@ -30,15 +30,14 @@ const handleSubmit = e => {
   }
 }
 const handleSend = async() => {
-  console.log("passe par le handleSend")
   const contract = drizzle.contracts.Store;
   const ref = await contract.methods["SetData"].cacheSend(input, {
     from: drizzleState.accounts[0]
   })
   setTxHashId(ref);
-  console.log("ref", ref)
 }
 
+///TODO separer dans un new composant
 const getTxStatus = () => {
   const {transactions, transactionStack} = drizzleState;
   const txHash = transactionStack[txHashId];
@@ -47,11 +46,24 @@ const getTxStatus = () => {
 }
 
   return (
-    <div className="App-header">
+    <div className="App-header"> 
       <header>
         <h1> Bienvenue dans notre exemple de store avec Drizzle</h1>
       </header>
-      <main>
+      <main> 
+        <ToastContainer 
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        transition={Slide}
+        />
+     
         <h3>Voici votre texte enregistré sur la blockchain :</h3>
         <div>
         <h3> Compte actif :</h3>
