@@ -7,6 +7,7 @@ import './App.css';
 const {AccountData, ContractData, ContractForm} = newContextComponents
 function App({drizzleState, reduxProps, drizzle}) {
 //redux stuff ??
+
   const [string, setString] = useState("loading...");
   const [input, setInput] = useState("");
   const [txHashId, setTxHashId] = useState("");
@@ -68,7 +69,7 @@ const getTxStatus = () => {
         <div>
         <h3> Compte actif :</h3>
         <h4>{drizzleState.accounts[0]}</h4>
-        <h4>{reduxProps.name}</h4>
+        <h4>{drizzleState.appStore.ui.name}</h4>
         <h4>Data de la blockchain : {string}</h4>
         <input type="text" value={input} onChange={handleChange} onKeyDown={handleSubmit} />
         {getTxStatus()}
